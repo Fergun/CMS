@@ -1,0 +1,164 @@
+a {
+    text-decoration:none;
+}
+
+a:link {
+    text-decoration: none;
+}
+
+a:visited {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+a:active {
+    text-decoration: none;
+}
+
+body {
+    margin:0px;
+    font-family: 'PT Sans Narrow', 'Helvetica', serif;
+    line-height: 1.09;
+    font-size: 2em;
+}
+
+.div-table{
+    display: table;
+    cursor: pointer;
+    width: 100%;
+    border-spacing: 3px;
+}
+.div-row{
+    display: table-row;
+}
+.div-header-row{
+    display: table-row;
+}
+.div-row:hover {
+    background-color: #eeeeee;
+}
+.div-cell{
+    display: table-cell;
+    border-width: thin;
+    padding: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    vertical-align: middle;
+}
+
+.div-context-menu{
+    display:none;
+    position:absolute;
+    z-index: 10;
+    /*padding: 5px 0;*/
+    /*width: 80px;*/
+    background-color: #fff;
+    border: solid 1px #dfdfdf;
+    box-shadow: 1px 1px 2px #cfcfcf;
+}
+
+.div-context-menu-active{
+    display: block;
+}
+
+.context-menu-list{
+    display: inline-block;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.context-menu-list:hover{
+    background-color: #eeeeee;
+}
+
+.border {
+    border-bottom: black 1px solid;
+    border-right: black 1px solid;
+    border-left: #cdcdcd 1px solid;
+    border-top: #cdcdcd 1px solid;
+}
+
+.group{
+    display: table-row-group;
+}
+.caption{
+    display: table-caption; text-align: center;
+}
+
+.center{
+    text-align: center;
+}
+.hidden{
+    display:none;
+}
+
+span.actions{
+    display:inline-block;
+    padding: 15px 15px;
+}
+
+.filter{
+    width: 20px;
+    height: 22px;
+    float: right;
+    /*margin-top: 9px;*/
+    /*margin-bottom: 9px;*/
+}
+
+input.search {
+    width: 100px;
+    margin-left: 15px;
+}
+
+span.glyphicon {
+    font-size: 1.3em;
+}
+
+.return {
+    float: left;
+}
+
+.actions.text{
+    line-height: 26px;
+}
+
+.main-actions {
+    float: right;
+}
+
+.header.text {
+    display: inline-block;
+    padding: 15px 0;
+    margin: 0 30px;
+    line-height: 26px;
+}
+
+.name {
+    float: left;
+}
+
+.arrow-up {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid black;
+    margin-bottom: 2px;
+}
+
+.arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #f00;
+    margin-top: 2px;
+}
+
+.nopadding {
+    padding: 0 !important;
+    margin: 0 !important;
+}
