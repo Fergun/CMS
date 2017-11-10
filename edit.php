@@ -13,14 +13,16 @@ if($db->next_record())
 
 $mode=$GLOBALS['mode'];
 $header_code=$GLOBALS['header_code'];
-$id=$GLOBALS['id'];
 $code=$GLOBALS['u_code'];
+$id=$GLOBALS['id'];
+$line_number=$GLOBALS['u_line_number'];
 
 
 $headings = get_fields_heading($header_code);
-$rows = get_fields($header_code, $headings, $code);
-$row = $rows[$id];
-
+//$rows = get_fields($header_code, $headings, $code);
+if(!contains($mode,'create')) {
+    $row = get_doc_data($header_code, $headings, $code, $id, $line_number);
+}
 if($mode=='to_create'){
     if($header_code == 'headers'){
         create_table($GLOBALS['_POST']['headers']['uh_code']);
@@ -90,7 +92,7 @@ echo '<form action="edit.php" name="edit" id="edit" method="post">';
                 $hidden = '';
                 $tmp_mode = $mode;
                 $value = $row[$heading['code']];
-                if($heading['code'] == 'u_code'){
+                if($heading['code'] == 'u_code' && $header_code != 'fields'){
                     $tmp_mode = 'hidden';
                     $hidden = 'hidden';
                     $value = ($row[$heading['code']] ? $row[$heading['code']] : '');
@@ -161,7 +163,7 @@ foreach($lines_headings as $lines_header => $line_headings) {
     if (isset($GLOBALS['ile_plus_'.$nr])) 
         ${'ile'.$nr} = $GLOBALS['ile_plus_'.$nr];
     for ($i = 0; $i < ${'ile'.$nr}; $i++) {
-        echo '<div class="div-row" '. ($mode == 'show' ? 'onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?header_code='.$lines_header.'&mode=show&id='.$id.'&u_code='.$header_code.'\'"' : 'onclick="console.log(document.getElementsByName(\'' . $lines_header . '[' . $nr . '][delete_' . $i . ']\')[0].click());"') .'>';
+        echo '<div class="div-row" '. ($mode == 'show' ? 'onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?header_code='.$lines_header.'&mode=show&id='.$id.'&u_line_number='.($i+1).'&u_code='.$header_code.'\'"' : 'onclick="document.getElementsByName(\'' . $lines_header . '[' . $nr . '][delete_' . $i . ']\')[0].click();"') .'>';
         foreach($line_headings as $column => $line_heading) {
             $tmp_mode = $mode;
             $value = ($GLOBALS[$lines_header][$i][$line_heading['code'] . '_' . $i] ? $GLOBALS[$lines_header][$i][$line_heading['code'] . '_' . $i] : $lines_rows[$i][$line_heading['code']]);

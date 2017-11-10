@@ -143,7 +143,7 @@ $rows = get_fields($GLOBALS['header_code'],$fields,'',$order,$filter,$search_sql
 $i=1;
 foreach($rows as $key => $row)
 {
-    echo '<div class="div-row" id='.$row['u_id'].' onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?header_code='.$GLOBALS['header_code'].'&mode=show&id='.$row['u_id'].'\'">';
+    echo '<div class="div-row" id='.$row['u_id'].' onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?header_code='.$GLOBALS['header_code'].'&mode=show&u_code='.$row['u_code'].'&id='.$row['u_id'].'&u_line_number='.$row['u_line_number'].'\'">';
 
     foreach($row as $key => $value) {
         echo '<div class="div-cell border">';

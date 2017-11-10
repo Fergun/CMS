@@ -83,6 +83,23 @@ function get_fields($header,$fields_code,$u_code,$order=0, $filter=0, $search=0)
     return $rows;
 }
 
+function get_doc_data($process_code,$proces_fields,$u_code,$u_id,$u_line_number)
+{
+    global $db;
+    if(!$u_code){
+        $u_line_number = 1;
+    }
+    $sql = 'SELECT * FROM uto_'. $process_code .' WHERE u_code = "'. $u_code .'" AND u_id = '. $u_id .' AND u_line_number = '. $u_line_number .';';
+    $db->query($sql);
+    if($db->next_record()) {
+        foreach($proces_fields as $field){
+            $row[$field['code']] = $db->f($field['code']);
+        }
+
+    }
+    return $row;
+}
+
 function get_fields_lines_heading($header)
 {
     global $db;
@@ -212,7 +229,7 @@ function update($header_code, $headers, $post)
             $values = array();
             foreach($row as $cell_name => $cell_value){
                 $name = substr($cell_name, 0, strlen($cell_name)-2);
-                if($name == 'delete'){
+                if($name == 'delete' || !$name){
                     continue;
                 }
                 $names[] = $name;
@@ -224,8 +241,10 @@ function update($header_code, $headers, $post)
                 }
                 $values[] = $cell_value;
             }
-            $sql .= ' (' . implode(',',$names) .') VALUES ('. implode(',',$values) .');';
-            $sqls[] = $sql;
+            $sql .= ' (' . implode(',', $names) . ') VALUES (' . implode(',', $values) . ');';
+            if(count($names) && count($values)) {
+                $sqls[] = $sql;
+            }
 //            $db->query($sql);
         }
     }
