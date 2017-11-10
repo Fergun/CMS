@@ -17,7 +17,7 @@
 	require_once('class.db.php');
 
 //  if ($GLOBALS['db_encoding'])
-//    require_once(dirname(__FILE__).'/functions_plconv.php');
+    require_once(dirname(__FILE__).'/db_translate.php');
 
 	class db extends DatabaseGlobal
 	{
@@ -203,6 +203,9 @@
 			{
 				printf("Debug: query = %s<br>\n", $Query_String);
 			}
+			$Query_String = my_translate($Query_String);
+
+
 
 			$this->Query_ID = @mysql_query($Query_String,$this->Link_ID);
 			$this->Row   = 0;

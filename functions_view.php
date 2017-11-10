@@ -205,6 +205,8 @@ function update($header_code, $headers, $post)
             $id=$post[$column_name['code']];
             continue;
         }
+        $post[$header_code][$column_name['code']] = str_replace('"', '\"', $post[$header_code][$column_name['code']]);
+        $post[$header_code][$column_name['code']] = str_replace("'", "\'", $post[$header_code][$column_name['code']]);
         if(is_numeric($post[$column_name['code']]))
             $sql .= $column_name['code'] . '=' .  $post[$header_code][$column_name['code']] ;
         else

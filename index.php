@@ -11,6 +11,10 @@ echo '</head>';
 echo '<body name="index">';
 require('settings.php');
 require('functions_view.php');
+
+require('system/SystemInit.php');
+
+
 $cont_in = '<div class="content"><div class="container">';
 $cont_out = '</div></div>';
 // Menu dla dokumentu
@@ -31,16 +35,18 @@ echo '</div></div></div><br>';
 
 //Załadowanie skrótow do AKTUALNOóCI
 echo '<div class="div-table">';
-$db->query('Select * from uto_headers');
-while($db->next_record())
-{
+$system = new SystemInit($db,'uto_headers','uh_code','uh_name');
+
+$processes = $system->get_processes();
+
+foreach ($processes as $process) {
     echo '<div class="div-row">';
-    echo '<div class="div-cell border center" onclick="window.location.href=\'http://undertheowl.pl/cms/view.php?header_code='. $db->f('uh_code') .'\'">'. $db->f('uh_name') .'</div>';
+    echo '<div class="div-cell border center" onclick="window.location.href=\'http://undertheowl.pl/cms/view.php?header_code='. $process['code'] .'\'">'. $process['name'] .'</div>';
     echo '</div>';
 }
 echo '</div>';
 
-
+unset($system);
 echo $cont_out;
 
 echo '<script>
