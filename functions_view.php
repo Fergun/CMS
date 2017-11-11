@@ -5,7 +5,8 @@ function create_table($table){
     $sql = 'CREATE TABLE IF NOT EXISTS `uto_'. $table .'` (
     `u_code` VARCHAR(50) NULL,
     `u_id` int(6) NOT NULL,
-  `u_line_number` int(6) unsigned NOT NULL,
+  `u_line_number` int(6) NOT NULL,
+  `u_status` int(6) unsigned NOT NULL,
   CONSTRAINT PK_'. $table .' PRIMARY KEY (u_code,u_id,u_line_number)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin2;';
     uto_query($sql);

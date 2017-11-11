@@ -1,24 +1,35 @@
 var taskItemClassName = "div-row";
 var menuState = 0;
 var contextMenuActive = "div-context-menu-active";
-var menu = document.querySelector(".div-context-menu");
+var body = $( "body" ).attr('name');
+if(body == 'index'){
+    var menu = $(".div-context-menu");
+}
+else{
+    var menu = document.querySelector(".div-context-menu");
+}
 
 if (document.addEventListener) { // IE >= 9; other browsers
     document.addEventListener('contextmenu', function(e) {
         var div_row = $( ".div-row:hover" ).attr('id');
-        var body = $( "body" ).attr('name');
-        // if(div_row) {
-            // $(".div-context-menu").toggleClass('div-context-menu-active');
 
             taskItemInContext = clickInsideElement( e, taskItemClassName );
             if ( taskItemInContext ) {
+                var doc_code = $( ".div-row:hover" ).attr('class').substring(8);
+                if(body == 'index'){
+                    var menu = document.querySelector(".div-context-menu."+doc_code);
+                }
+                else{
+                    var menu = document.querySelector(".div-context-menu");
+                }
                 e.preventDefault();
-                toggleMenuOn();
+                toggleMenuOff();
+                toggleMenuOn(menu);
                 var x = mouseX(event)
                 var y = mouseY(event)
                 $(".div-context-menu-active").css({'left' : x + 'px'})
                 $(".div-context-menu-active").css({'top' : y + 'px'})
-                $(".context-menu-list").each(function(i){
+                $(".context-menu-list" + (body == 'index' ? '.'+doc_code : '')).each(function(i){
                     $(this).attr("onclick", 'window.location.href="http://undertheowl.pl/cms/edit.php?header_code='+ body +'&mode=' + statuses_map($(this).text()) +'&id=' + div_row + '"');
                 });
                 // positionMenu(e);
@@ -48,6 +59,8 @@ function statuses_map(text){
         case 'Usuń':
             string = 'delete';
             break;
+        default:
+            string = '';
     }
     return string;
 }
@@ -76,7 +89,7 @@ function mouseY(evt) {
     }
 }
 
-function toggleMenuOn() {
+function toggleMenuOn(menu) {
     if ( menuState !== 1 ) {
         menuState = 1;
         menu.classList.add( contextMenuActive );
@@ -86,7 +99,14 @@ function toggleMenuOn() {
 function toggleMenuOff() {
     if ( menuState !== 0 ) {
         menuState = 0;
-        menu.classList.remove( contextMenuActive );
+        if(body == 'index') {
+            for (i = 0; i < menu.length; i++) {
+                menu[i].classList.remove(contextMenuActive);
+            }
+        }
+        else{
+            menu.classList.remove( contextMenuActive );
+        }
     }
 }
 

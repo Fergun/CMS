@@ -228,13 +228,6 @@ if($mode != 'show'){
 echo $cont_out;
 
 echo '<script>
-    $(\'#form input\').keydown(function(e) {
-        if (e.keyCode == 13) {
-            $(\'#form\').submit();
-        }
-    });
-</script>
-<script>
 $(document).ready(function(){
     $(\'[data-toggle="tooltip"]\').tooltip();   
 });
@@ -245,6 +238,15 @@ function increm(value,sign){
         value--;
     return value;
 }
+$(document).ready(function () {
+    $(this).keydown(function (e) {
+    
+      if (e.ctrlKey && e.keyCode == 13) {
+        edit.mode.value="to_' . $mode . '";
+        edit.submit();
+      }
+    });
+}); 
 </script>';
 ?>
 

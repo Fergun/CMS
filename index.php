@@ -12,15 +12,14 @@ echo '<body name="index">';
 require('settings.php');
 require('functions_view.php');
 
-require('system/SystemInit.php');
+require('system/System_Init.php');
+require('system/Config.php');
+require('system/Process.php');
 
 
 $cont_in = '<div class="content"><div class="container">';
 $cont_out = '</div></div>';
 // Menu dla dokumentu
-echo '<nav class="div-context-menu">';
-echo '<nav class="context-menu-list">Modyfikacje</nav><nav class="context-menu-list">Zakończ</nav>';
-echo '</nav>';
 //
 echo $cont_in;
 
@@ -35,13 +34,19 @@ echo '</div></div></div><br>';
 
 //Załadowanie skrótow do AKTUALNOóCI
 echo '<div class="div-table">';
-$system = new SystemInit($db,'uto_headers','uh_code','uh_name');
-
-$processes = $system->get_processes();
-
-foreach ($processes as $process) {
-    echo '<div class="div-row">';
-    echo '<div class="div-cell border center" onclick="window.location.href=\'http://undertheowl.pl/cms/view.php?header_code='. $process['code'] .'\'">'. $process['name'] .'</div>';
+$config = new Config();
+$system = new System_Init($db,$config);
+$processList = $system->getProcessesList();
+//$actions = $system->get_process_action('headers','uto_statuses','us_action',1);
+foreach ($processList as $oneProcess) {
+    $process = $system->getProcess($oneProcess['code']);
+    echo '<nav class="div-context-menu '.$oneProcess['code'].'">';
+    foreach ($process['actions'] as $action){
+        echo '<nav class="context-menu-list">'. $action['name'] .'</nav>';
+    }
+    echo '</nav>';
+    echo '<div class="div-row '.$oneProcess['code'].'">';
+    echo '<div '.tooltip('Status procesu: '. $process['status']['name']).' class="div-cell border center" onclick="window.location.href=\'http://undertheowl.pl/cms/view.php?header_code='. $oneProcess['code'] .'\'">'. $oneProcess['name'] .'</div>';
     echo '</div>';
 }
 echo '</div>';

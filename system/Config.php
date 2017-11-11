@@ -2,6 +2,14 @@
 
 class Config
 {
-    private $base_addres;
+    private $config;
 
+    public function __construct()
+    {
+        $this->config = parse_ini_file('config.ini');
+    }
+
+    public function getData(){
+        return $this->config;
+    }
 }
