@@ -19,7 +19,7 @@ $line_number=$GLOBALS['u_line_number'];
 
 
 $headings = get_fields_heading($header_code);
-//$rows = get_fields($header_code, $headings, $code);
+
 if(!contains($mode,'create')) {
     $row = get_doc_data($header_code, $headings, $code, $id, $line_number);
 }
@@ -82,8 +82,8 @@ echo '<form action="edit.php" name="edit" id="edit" method="post">';
         echo '<span '.tooltip('Powrót').' class="glyphicon glyphicon-arrow-left actions return" onclick="window.location.href=\'http://undertheowl.pl/cms/view.php?header_code='.$header_code.'\'"></span>';
         echo '<span class="header text">'. uto_query('SELECT uh_doc_name FROM uto_headers WHERE uh_code ="'. $header_code .'"').'</span>';
         if($mode == 'show'){
-            echo '<span '.tooltip('Usuń').' class="glyphicon glyphicon-trash actions main-actions" onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?mode=delete&id='.$id.'&header_code='.$header_code.'\'"></span>';
-            echo '<span '.tooltip('Edytuj').' class="glyphicon glyphicon-pencil actions main-actions" onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?mode=edit&id='.$id.'&header_code='.$header_code.'\'"></span>';
+            echo '<span '.tooltip('Usuń').' class="glyphicon glyphicon-trash actions main-actions" onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?mode=delete&header_code='.$header_code.'&u_code='.$code.'&id='.$id.'&u_line_number='.$line_number.'\'"></span>';
+            echo '<span '.tooltip('Edytuj').' class="glyphicon glyphicon-pencil actions main-actions" onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?mode=edit&header_code='.$header_code.'&u_code='.$code.'&id='.$id.'&u_line_number='.$line_number.'\'"></span>';
         }
     echo '</div></div></div><br>';
 

@@ -37,7 +37,6 @@ echo '<div class="div-table">';
 $config = new Config();
 $system = new System_Init($db,$config);
 $processList = $system->getProcessesList();
-//$actions = $system->get_process_action('headers','uto_statuses','us_action',1);
 foreach ($processList as $oneProcess) {
     $process = $system->getProcess($oneProcess['code']);
     echo '<nav class="div-context-menu '.$oneProcess['code'].'">';
@@ -46,12 +45,14 @@ foreach ($processList as $oneProcess) {
     }
     echo '</nav>';
     echo '<div class="div-row '.$oneProcess['code'].'">';
-    echo '<div '.tooltip('Status procesu: '. $process['status']['name']).' class="div-cell border center" onclick="window.location.href=\'http://undertheowl.pl/cms/view.php?header_code='. $oneProcess['code'] .'\'">'. $oneProcess['name'] .'</div>';
+    echo '<div '.tooltip('Status procesu: '. ($process['status']['name'] ? $process['status']['name'] : '(brak)' )).' class="div-cell border center" onclick="window.location.href=\'http://undertheowl.pl/cms/view.php?header_code='. $oneProcess['code'] .'\'">'. $oneProcess['name'] .'</div>';
     echo '</div>';
+    unset($process);
 }
 echo '</div>';
 
 unset($system);
+unset($config);
 echo $cont_out;
 
 echo '<script>

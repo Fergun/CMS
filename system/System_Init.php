@@ -5,7 +5,7 @@ class System_Init
 {
     const aaaa = 1; /// kiedy¶ wykorzystam narazie nie
     private $db;
-    public $config;
+    private $config;
 
     public function __construct($db,Config $config)
     {
@@ -33,10 +33,13 @@ class System_Init
 
     public function getProcess($doc_code)
     {
-        $process = new Process($this->config,$doc_code);
-        $status = $process->getProcessStatus();
-        $actions = $process->getProcessActions($status['value']);
-        $process = array(
+        $process    = new Process($this->config,$doc_code);
+        $name       = $process->getProcessName();
+        $status     = $process->getProcessStatus();
+        $actions    = $process->getProcessActions($status['value']);
+
+        $process    = array(
+            'name' => $name,
             'status' => $status,
             'actions' => ($actions ? $actions : 0)
         );

@@ -314,12 +314,11 @@ function delete($header_code, $headers, $post)
     }
 }
 
-function filter($header_code,$field_code,$search_filter=0)
+function filter($field_code)
 {
-    if($search_filter)
-        $header_code .= '&' . implode('&',$search_filter);
-    $link = 'onclick="window.location.href=\'http://undertheowl.pl/cms/view.php?header_code='.$header_code.'&order='.$field_code.'\'"';
-    $link_desc = 'onclick="window.location.href=\'http://undertheowl.pl/cms/view.php?header_code='.$header_code.'&order='.$field_code.'&desc=1\'"';
+
+    $link = 'onclick="view.order.value=\''. $field_code .'\';view.desc.value=0;view.submit();"';
+    $link_desc = 'onclick="view.order.value=\''. $field_code .'\';view.desc.value=1;view.submit();"';
 
 //    $numeric = rand(0,1);
 //    $glyph = 'glyphicon glyphicon-sort-by-'. ($numeric ? 'order' : 'alphabet') . ($GLOBALS['desc'] ? '-alt' : '');
@@ -347,23 +346,12 @@ function search_sql($text,$fields){
     return $string;
 }
 
-function distinct_occurance($field_name, $header_code, $search_sql, $filter = 0){
-    global $db;
+function distinct_occurance($field_name, $distincts){
 
-    $sql = 'SELECT distinct '.$field_name.' FROM uto_'. $header_code . $search_sql;
-    if($filter){
-        $sql .= ' AND '. $filter;
-    }
-    $db->query($sql);
-    $distincts = array();
-    while($db->next_record()){
-        $distincts[] = $db->f($field_name);
-    }
-
-    $string = '<select name="' . $field_name . '" onchange="this.form.submit()">';
+    $string = '<select name="filters[' . $field_name . ']" onchange="this.form.submit()">';
     $string .= '<option value="">(wszystkie)</option>';
     foreach($distincts as $distinct){
-        if($GLOBALS[$field_name] == $distinct)
+        if($GLOBALS['filters'][$field_name] == $distinct && !$GLOBALS['clear'])
             $string .= '<option value="'. $distinct .'" selected>'. $distinct .'</option>';
         else
             $string .= '<option value="'. $distinct .'">'. $distinct .'</option>';
