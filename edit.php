@@ -64,7 +64,7 @@ echo '<form action="edit.php" name="edit" id="edit" method="post">';
 
     echo '<div class="div-table"><div class="div-header-row"><div class="div-cell nopadding border">';
         echo '<span '.tooltip('Powrót').' class="glyphicon glyphicon-arrow-left actions return" onclick="window.location.href=\'http://undertheowl.pl/cms/view.php?header_code='.$header_code.'\'"></span>';
-        echo '<span class="header text">'. uto_query('SELECT uh_doc_name FROM uto_headers WHERE uh_code ="'. $header_code .'"').'</span>';
+        echo '<span class="header text">'. $title .'</span>';
         if($mode == 'show'){
             echo '<span '.tooltip('Usuń').' class="glyphicon glyphicon-trash actions main-actions" onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?mode=delete&header_code='.$header_code.'&u_code='.$code.'&id='.$id.'&u_line_number='.$line_number.'\'"></span>';
             echo '<span '.tooltip('Edytuj').' class="glyphicon glyphicon-pencil actions main-actions" onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?mode=edit&header_code='.$header_code.'&u_code='.$code.'&id='.$id.'&u_line_number='.$line_number.'\'"></span>';
@@ -72,19 +72,19 @@ echo '<form action="edit.php" name="edit" id="edit" method="post">';
     echo '</div></div></div><br>';
 
     echo '<div class="div-table">';
-            foreach($headers as $key => $heading){
+            foreach($headers as $key => $header){
                 $hidden = '';
                 $tmp_mode = $mode;
-                $value = $row[$heading['code']];
-                if($heading['code'] == 'u_code' && $header_code != 'fields'){
+                $value = $row[$header['code']];
+                if($header['code'] == 'u_code' && $header_code != 'fields'){
                     $tmp_mode = 'hidden';
                     $hidden = 'hidden';
-                    $value = ($row[$heading['code']] ? $row[$heading['code']] : '');
+                    $value = ($row[$header['code']] ? $row[$header['code']] : '');
                 }
-                if($heading['code'] == 'u_id'){
+                if($header['code'] == 'u_id'){
                     $tmp_mode = 'show';
                 }
-                if($heading['code'] == 'u_line_number' || ($heading['code'] == 'u_id' && $mode == 'create')){
+                if($header['code'] == 'u_line_number' || ($header['code'] == 'u_id' && $mode == 'create')){
                     $value = 1;
                     $tmp_mode = 'hidden';
                     $hidden = 'hidden';
@@ -92,11 +92,11 @@ echo '<form action="edit.php" name="edit" id="edit" method="post">';
                 echo '<div class="div-row '. $hidden .'">';
 
                 echo '<div class="div-cell border" style="width:1%">';
-                echo '<div class="header-button" name="' . $heading['code'] . '">' . $heading['name'] . '</div>';
+                echo '<div class="header-button" name="' . $header['code'] . '">' . $header['name'] . '</div>';
                 echo '</div>';
 
                 echo '<div class="div-cell border" style="width:99%">';
-                echo '<div class="header-button" name="' . $heading['code'] . '">'.if_edit($header_code,-1,$tmp_mode,$heading['code'],$value).'</div>';
+                echo '<div class="header-button" name="' . $header['code'] . '">'.if_edit($header_code,-1,$tmp_mode,$header['code'],$value).'</div>';
                 echo '</div>';
 
                 echo '</div>';
@@ -183,10 +183,8 @@ foreach($lines_headings as $lines_header => $line_headings) {
     if ($mode == 'edit') {
         send_hidden('ile_plus_'.$nr,${'ile'.$nr});
         echo '<div class="div-table"><div class="div-header-row"><div class="div-cell nopadding">';
-//        echo '<span ' . tooltip('Dodaj') . ' class="actions border return" onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?mode=' . $mode . '&id=' . $id . '&header_code=' . $header_code . '&ile_plus=' . ($ile + 1) . '\'">Dodaj</span>';
-        echo '<span ' . tooltip('Dodaj') . ' class="actions border return" onclick="edit.mode.value=\'' . $mode . '\';console.log(edit.ile_plus_'.$nr.'.value);edit.ile_plus_'.$nr.'.value=increm(edit.ile_plus_'.$nr.'.value,1);edit.submit();">Dodaj</span>';
-//        echo '<span ' . tooltip('Usuń') . ' class="actions border main-actions" onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?mode=' . $mode . '&id=' . $id . '&header_code=' . $header_code . '&ile_plus_'.$nr.'=' . ($ile - 1) . '\'">Usuń</span>';
-        echo '<span ' . tooltip('Usuń') . ' class="actions border main-actions" onclick="edit.mode.value=\'' . $mode . '\';console.log(edit.ile_plus_'.$nr.'.value);edit.ile_plus_'.$nr.'.value=increm(edit.ile_plus_'.$nr.'.value,0);edit.submit();">Usuń</span>';
+        echo '<span ' . tooltip('Dodaj') . ' class="actions border return" onclick="edit.mode.value=\'' . $mode . '\';edit.ile_plus_'.$nr.'.value=increm(edit.ile_plus_'.$nr.'.value,1);edit.submit();">Dodaj</span>';
+        echo '<span ' . tooltip('Usuń') . ' class="actions border main-actions" onclick="edit.mode.value=\'' . $mode . '\';edit.ile_plus_'.$nr.'.value=increm(edit.ile_plus_'.$nr.'.value,0);edit.submit();">Usuń</span>';
         echo '</div></div></div>';
     }
     $nr++;

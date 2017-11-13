@@ -25,6 +25,10 @@ body {
     font-size: 2em;
 }
 
+input {
+    width: 80px !important;
+}
+
 .div-table{
     display: table;
     cursor: pointer;

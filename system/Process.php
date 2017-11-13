@@ -98,8 +98,9 @@ class Process
         $fieldsName         = $this->config['fields']['name'];
         $fieldsCode         = $this->config['fields']['code'];
         $fieldsAttribute    = $this->config['fields']['attribute'];
+        $fieldsHidden       = $this->config['fields']['hidden'];
 
-        $sql = 'SELECT '. $fieldsCode .', '. $fieldsName .', '. $fieldsAttribute .' FROM '. $fieldsTable .' f,'. $processTable .' p WHERE f.'. $id .' = p.'. $id .' AND '. $processCode .' = "'. $process_code .'"';
+        $sql = 'SELECT '. $fieldsCode .', '. $fieldsName .', '. $fieldsAttribute .', '. $fieldsHidden .' FROM '. $fieldsTable .' f,'. $processTable .' p WHERE f.'. $id .' = p.'. $id .' AND '. $processCode .' = "'. $process_code .'"';
 
         $db->query($sql);
         while($db->next_record()) {
@@ -107,7 +108,8 @@ class Process
             $headers[] =  array(
                 'name' => $db->f($fieldsName),
                 'code' => $db->f($fieldsCode),
-                'attr' => $db->f($fieldsAttribute)
+                'attr' => $db->f($fieldsAttribute),
+                'hidden' => $db->f($fieldsHidden)
             );
         }
 
