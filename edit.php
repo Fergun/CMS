@@ -1,10 +1,5 @@
 <?php
-foreach ($_GET as $key => $val) $GLOBALS[$key] = $val;
-foreach ($_POST as $key => $val) $GLOBALS[$key] = $val;
-foreach ($_COOKIE as $key => $val) $GLOBALS[$key] = $val;
-
-require('settings.php');
-require('functions_view.php');
+require('support/init.php');
 
 $sql='SELECT uh_name FROM uto_headers WHERE uh_code="'.$GLOBALS['header_code'].'"';
 $db->query($sql);

@@ -1,13 +1,6 @@
 <?php
-//ini_set('display_errors', 1);
 
-
-foreach ($_GET as $key => $val) $GLOBALS[$key] = $val;
-foreach ($_POST as $key => $val) $GLOBALS[$key] = $val;
-foreach ($_COOKIE as $key => $val) $GLOBALS[$key] = $val;
-
-require('settings.php');
-require('functions_view.php');
+require('support/init.php');
 
 require('system/Config.php');
 require('system/System_Init.php');
@@ -109,7 +102,7 @@ foreach($headers as $header) {
         echo '<div class="div-cell border">';
         echo '<div class="name">' . $header['name'] . '</div>';
         if (contains($header['attr'], 'O'))
-            echo filter($header['code']);
+            echo order($header['code']);
         echo '</div>';
     }
 }

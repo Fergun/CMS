@@ -314,7 +314,7 @@ function delete($header_code, $headers, $post)
     }
 }
 
-function filter($field_code)
+function order($field_code)
 {
 
     $link = 'onclick="view.order.value=\''. $field_code .'\';view.desc.value=0;view.submit();"';
@@ -330,20 +330,6 @@ function filter($field_code)
     $filter .= '</div>';
 //    $filter .= '<span class="filter '. $glyph .'"></span>';
     echo $filter;
-}
-
-function search_sql($text,$fields){
-    if(!$text)
-        return;
-
-    $string = ' WHERE (';
-    foreach($fields as $field){
-        if($field['code'] == 'u_id')
-            continue;
-        $search[] = $field['code'] .' LIKE "%'. $text .'%"';
-    }
-    $string .= implode(' OR ',$search) . ')';
-    return $string;
 }
 
 function distinct_occurance($field_name, $distincts){

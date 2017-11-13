@@ -13,14 +13,16 @@ class System_Init
         $this->config = $config->getData();
     }
 
-    public function getProcessesList()
+    public function getProcessesList($search = 0)
     {
         $db             = $this->db;
         $process_table  = $this->config['headers']['table'];
         $process_code   = $this->config['headers']['code'];
         $process_name   = $this->config['headers']['name'];
 
-        $sql = 'SELECT '. $process_code .', '. $process_name .' FROM '. $process_table .';';
+        $sql = 'SELECT '. $process_code .', '. $process_name .' FROM '. $process_table ;
+        if($search)
+            $sql .= ' WHERE '. $process_name .' LIKE "%'. $search .'%"';
         $db->query($sql);
         while($db->next_record()){
             $processes[] = array(
