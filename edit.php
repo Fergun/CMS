@@ -1,28 +1,28 @@
 <?php
 require('support/init.php');
 
-$sql='SELECT uh_name FROM uto_headers WHERE uh_code="'.$GLOBALS['header_code'].'"';
-$db->query($sql);
-if($db->next_record())
-    $header=$db->f('uh_name');
+require('system/Config.php');
+require('system/Process.php');
+$config = new Config();
+$indexes = $config->getData()['indexes'];
+$process = new Process($config->getData(),$GLOBALS['header_code']);
+//Załadowanie nagłówków
+$headers = $process->getProcessHeaders();
 
-$mode=$GLOBALS['mode'];
-$header_code=$GLOBALS['header_code'];
-$code=$GLOBALS['u_code'];
-$id=$GLOBALS['id'];
-$line_number=$GLOBALS['u_line_number'];
-
-
-$headings = get_fields_heading($header_code);
+$mode = $GLOBALS['mode'];
+$header_code = $GLOBALS['header_code'];
+$code = $GLOBALS['u_code'];
+$id = $GLOBALS['id'];
+$line_number = $GLOBALS['u_line_number'];
 
 if(!contains($mode,'create')) {
-    $row = get_doc_data($header_code, $headings, $code, $id, $line_number);
+    $row = get_doc_data($header_code, $headers, $code, $id, $line_number);
 }
 if($mode=='to_create'){
     if($header_code == 'headers'){
         create_table($GLOBALS['_POST']['headers']['uh_code']);
     }
-    insert($header_code,$headings,$GLOBALS['_POST']);
+    insert($header_code,$headers,$GLOBALS['_POST']);
     header('Location: http://undertheowl.pl/cms/view.php?header_code='.$header_code);
     exit;
 }
@@ -30,7 +30,7 @@ if($mode=='to_edit') {
     if($header_code == 'headers') {
         modify_table($id,$GLOBALS['_POST']['headers']['uh_code'], $GLOBALS['_POST']);
     }
-    update($header_code,$headings,$GLOBALS['_POST']);
+    update($header_code,$headers,$GLOBALS['_POST']);
     header('Location: http://undertheowl.pl/cms/edit.php?mode=show&id='.$id.'&header_code='.$header_code);
     exit;
 }
@@ -38,26 +38,15 @@ if($mode=='to_delete'){
     if($header_code == 'headers'){
         delete_table($GLOBALS['_POST']['headers']['uh_code']);
     }
-    delete($header_code,$headings,$GLOBALS['_POST']);
+    delete($header_code,$headers,$GLOBALS['_POST']);
     header('Location: http://undertheowl.pl/cms/view.php?header_code='.$header_code);
     exit;
 }
-?>
 
+$title = $process->getProcessName();
+require('support/style.php');
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
-<title><?php echo $header; ?></title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<link href="https://fonts.googleapis.com/css?family=PT+Sans+Narrow" rel="stylesheet">
-<link rel="stylesheet" href="style.css" type="text/css">
-</head>
-<body>
-<?php
+echo '<body name="'.$GLOBALS['header_code'].'">';
 $cont_in = '<div class="content"><div class="container">';
 $cont_out = '</div></div>';
 
@@ -83,7 +72,7 @@ echo '<form action="edit.php" name="edit" id="edit" method="post">';
     echo '</div></div></div><br>';
 
     echo '<div class="div-table">';
-            foreach($headings as $key => $heading){
+            foreach($headers as $key => $heading){
                 $hidden = '';
                 $tmp_mode = $mode;
                 $value = $row[$heading['code']];

@@ -1,22 +1,14 @@
 <?php
-echo '<html><head>';
-echo '<title>Adam Mikołajczyk</title>';
-echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
-echo '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">';
-echo '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>';
-echo '<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>';
-echo '<link href="https://fonts.googleapis.com/css?family=PT+Sans+Narrow" rel="stylesheet">';
-echo '<link rel="stylesheet" href="style.css" type="text/css">';
-echo '</head>';
-echo '<body name="index">';
-
 require('support/init.php');
+$title = 'Adam Mikołajczyk';
+require('support/style.php');
 
 require('system/System_Init.php');
 require('system/Config.php');
 require('system/Process.php');
 
 
+echo '<body name="index">';
 $cont_in = '<div class="content"><div class="container">';
 $cont_out = '</div></div>';
 // Menu dla dokumentu
@@ -25,8 +17,8 @@ echo $cont_in;
 echo '<form>';
 //Wyszukiwarka
 echo '<br><div class="div-table"><div class="div-header-row"><div class="div-cell nopadding border center">';
-echo '<span '.tooltip('Undertheowl').' class="actions text">System CMS do zarządzania stroną</span>';
-echo '<span '.tooltip('Szukaj').' class="actions return"><input name="search" class="search" value="'.$GLOBALS['search'].'"></span>';
+echo '<span '.tooltip('Undertheowl').' class="actions text">System CMS</span>';
+echo '<span '.tooltip('Wyszukaj proces').' class="actions return"><input name="search" class="search" value="'.$GLOBALS['search'].'"></span>';
 echo '<span '.tooltip('Dodaj').' class="glyphicon glyphicon-plus actions main-actions" onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?mode=create&header_code=headers\'"></span>';
 if(isset($GLOBALS['search'])){
     echo '<span '.tooltip('Zamknij').' class="glyphicon glyphicon-remove actions return" onclick="window.location.href=\'http://undertheowl.pl/cms\'"></span>';

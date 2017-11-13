@@ -3,7 +3,6 @@
 require('support/init.php');
 
 require('system/Config.php');
-require('system/System_Init.php');
 require('system/Process.php');
 $config = new Config();
 $indexes = $config->getData()['indexes'];
@@ -20,29 +19,9 @@ if($GLOBALS['order']) {
 //Załadowanie dokumentów
 $documents = $process->getDocuments($headers, $GLOBALS['search'], $GLOBALS['filters'], $order);
 
+$title = $process->getProcessName();
+require('support/style.php');
 
-?>
-
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
-<title><?php echo $process->getProcessName(); ?></title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<link href="https://fonts.googleapis.com/css?family=PT+Sans+Narrow" rel="stylesheet">
-<link rel="stylesheet" href="style.css" type="text/css">
-<script>
-    $('#form input').keydown(function(e) {
-        if (e.keyCode == 13) {
-            $('#form').submit();
-        }
-    });
-</script>
-</head>
-<?php
 echo '<body name="'.$GLOBALS['header_code'].'">';
 $cont_in = '<div class="content"><div class="container">';
 $cont_out = '</div></div>';
@@ -131,6 +110,13 @@ echo '<script>
 $(document).ready(function(){
     $(\'[data-toggle="tooltip"]\').tooltip();   
 });
+</script>
+<script>
+    $(\'#form input\').keydown(function(e) {
+        if (e.keyCode == 13) {
+            $(\'#form\').submit();
+        }
+    });
 </script>
 <script src="context-menu.js"> </script>';
 
