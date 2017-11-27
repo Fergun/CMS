@@ -7,7 +7,7 @@ abstract class DatabaseGlobal
       return ($revert==0 ? iconv($GLOBALS['db_encoding'],$GLOBALS['charset'], $text) : iconv($GLOBALS['charset'],$GLOBALS['db_encoding'], $text));
     }else{
       return $text;
-    }
+    } 
   }
 
   protected function showErrorMessage($errorInfo = array()){
