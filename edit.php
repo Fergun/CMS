@@ -18,28 +18,24 @@ $line_number = $GLOBALS['u_line_number'];
 if(!contains($mode,'create')) {
     $row = get_doc_data($header_code, $headers, $code, $id, $line_number);
 }
-if($mode=='to_create'){
+
+if(contains($mode,'to_')){
+    $db_data_action = str_replace('to_','',$mode);
     if($header_code == 'headers'){
-        create_table($GLOBALS['_POST']['headers']['uh_code']);
+        $db_table_action = $db_data_action . '_table';
+        $db_table_action($id,$GLOBALS['_POST']['headers']['uh_code'], $GLOBALS['_POST']);
     }
-    insert($header_code,$headers,$GLOBALS['_POST']);
-    header('Location: http://undertheowl.pl/cms/view.php?header_code='.$header_code);
-    exit;
-}
-if($mode=='to_edit') {
-    if($header_code == 'headers') {
-        modify_table($id,$GLOBALS['_POST']['headers']['uh_code'], $GLOBALS['_POST']);
+    $db_data_action($header_code,$headers,$GLOBALS['_POST']);
+    switch ($db_data_action){
+        case 'create':
+        case 'delete':
+            $change_destination = 'view.php?header_code='.$header_code;
+            break;
+        case 'edit':
+            $change_destination = 'edit.php?mode=show&id='.$id.'&header_code='.$header_code;
+            break;
     }
-    update($header_code,$headers,$GLOBALS['_POST']);
-    header('Location: http://undertheowl.pl/cms/edit.php?mode=show&id='.$id.'&header_code='.$header_code);
-    exit;
-}
-if($mode=='to_delete'){
-    if($header_code == 'headers'){
-        delete_table($GLOBALS['_POST']['headers']['uh_code']);
-    }
-    delete($header_code,$headers,$GLOBALS['_POST']);
-    header('Location: http://undertheowl.pl/cms/view.php?header_code='.$header_code);
+    header('Location: http://undertheowl.pl/cms/'. $change_destination);
     exit;
 }
 

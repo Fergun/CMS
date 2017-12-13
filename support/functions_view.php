@@ -1,6 +1,6 @@
 <?php
 
-function create_table($table){
+function create_table($id,$table,$post){
 
     $sql = 'CREATE TABLE IF NOT EXISTS `uto_'. $table .'` (
     `u_code` VARCHAR(50) NULL,
@@ -12,13 +12,13 @@ function create_table($table){
     uto_query($sql);
 }
 
-function delete_table($table){
+function delete_table($id,$table,$post){
     //Usuwam Tabele
     $sql = 'DROP TABLE `uto_'. $table .'`;';
     uto_query($sql);
 }
 
-function modify_table($id,$table,$post)
+function edit_table($id,$table,$post)
 {
     $table = 'uto_'. $table;
     foreach ($post['fields'] as $key => $field) {
@@ -196,7 +196,7 @@ function send_hidden_array($row_name, $cell_name,$value = '__empty__')
   echo '<input type="hidden" name="'.$row_name .'['. $cell_name.']" value="'.$value.'">';
 }
 
-function update($header_code, $headers, $post)
+function edit($header_code, $headers, $post)
 {
     global $db;
     $sql = 'UPDATE uto_' . $header_code . ' SET ';
@@ -257,7 +257,7 @@ function update($header_code, $headers, $post)
     }
 }
 
-function insert($header_code, $headers, $post)
+function create($header_code, $headers, $post)
 {
     global $db;
     $sql = 'SELECT MAX(u_id) FROM uto_' . $header_code . ' ';
