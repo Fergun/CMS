@@ -18,7 +18,13 @@ echo  '<script>
               numberDisplayed: 1,
               disableIfEmpty: true,
               enableFiltering: true,
-          });      
+              onDropdownHidden: function(e){
+                console.log($(this));
+                if($(this)[0].$select.hasClass("refresh")){
+                    $("form").submit();   //JAK WIÊCEJ NIZ JEDEN FORM TO ZMIENIÆ        
+                }
+              }
+          });
       });
       </script>';
 echo '</head>';
