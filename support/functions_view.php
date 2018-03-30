@@ -220,12 +220,12 @@ function edit($header_code, $headers, $post)
     }
 
     $sql .= 'WHERE u_id='. $id .';';
-//    $db->query($sql);
+    $db->query($sql);
     $sqls[] = $sql;
     foreach ($post['line_codes'] as $line_header) {
         $sqls[] = 'DELETE FROM uto_'. $line_header .' WHERE u_code = "'. $header_code .'" AND u_id = '. $id .';';
         $sql = 'DELETE FROM uto_'. $line_header .' WHERE u_code = "'. $header_code .'" AND u_id = '. $id .';';
-//        $db->query($sql);
+        $db->query($sql);
         foreach( $post[$line_header] as $row){
             $sql = 'INSERT INTO uto_'. $line_header;
             $names = array();
@@ -248,7 +248,7 @@ function edit($header_code, $headers, $post)
             if(count($names) && count($values)) {
                 $sqls[] = $sql;
             }
-//            $db->query($sql);
+            $db->query($sql);
         }
     }
 
@@ -334,10 +334,14 @@ function order($field_code)
 
 function distinct_occurance($field_name, $distincts){
 
-    $string = '<select name="filters[' . $field_name . ']" onchange="this.form.submit()">';
-    $string .= '<option value="">(wszystkie)</option>';
+//    $string = '<select name="filters[' . $field_name . ']" onchange="this.form.submit()" multiple="multiple">';
+    $string = '<select name="filters[' . $field_name . '][]" multiple="multiple">';
+//    $string .= '<option value="">(wszystkie)</option>';
     foreach($distincts as $distinct){
-        if($GLOBALS['filters'][$field_name] == $distinct && !$GLOBALS['clear'])
+        if($distinct == null){
+            continue;
+        }
+        if(in_array($distinct, $GLOBALS['filters'][$field_name]) && !$GLOBALS['clear'])
             $string .= '<option value="'. $distinct .'" selected>'. $distinct .'</option>';
         else
             $string .= '<option value="'. $distinct .'">'. $distinct .'</option>';

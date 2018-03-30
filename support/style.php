@@ -7,5 +7,18 @@ echo '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3
 echo '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>';
 echo '<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>';
 echo '<link href="https://fonts.googleapis.com/css?family=PT+Sans+Narrow" rel="stylesheet">';
-echo '<link rel="stylesheet" href="style.css" type="text/css">';
+echo '<link rel="stylesheet" href="style.css?v=1" type="text/css">';
+echo '<!-- Include the plugin\'s CSS and JS: -->
+      <script type="text/javascript" src="support/js/bootstrap-multiselect.js"></script>
+      <link rel="stylesheet" href="support/css/bootstrap-multiselect.css" type="text/css"/>';
+echo  '<script>
+      $(document).ready(function(){
+          // zamiana wszystkich selectow na bootstrap-multiselect
+          $(\'select\').multiselect({
+              numberDisplayed: 1,
+              disableIfEmpty: true,
+              enableFiltering: true,
+          });      
+      });
+      </script>';
 echo '</head>';

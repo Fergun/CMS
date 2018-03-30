@@ -23,10 +23,9 @@ $title = $process->getProcessName();
 require('support/style.php');
 
 echo '<body name="'.$GLOBALS['header_code'].'">';
-$cont_in = '<div class="content"><div class="container">';
-$cont_out = '</div></div>';
 
-echo $cont_in;
+//Start strony
+echo '<div class="content"><div class="container">';
 
 echo '<br>';
 echo '<form name="view" id="view" method="post">';
@@ -42,10 +41,10 @@ echo '<div class="div-header-row"><div class="div-cell nopadding border search">
 echo '<span '.tooltip('Powrót').' class="glyphicon glyphicon-arrow-left actions return" onclick="window.location.href=\'http://undertheowl.pl/cms\'"></span>';
 echo '<span '.tooltip('Szukaj').' class="actions return"><input name="search" class="search" value="'.$GLOBALS['search'].'"></span>';
 echo '<span '.tooltip('Dodaj').' class="glyphicon glyphicon-plus actions main-actions" onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?mode=create&header_code='.$header_code.'\'"></span>';
-if(isset($GLOBALS['search'])){
+if(isset($GLOBALS['search']) && $GLOBALS['search']){
     echo '<span '.tooltip('Zamknij').' class="glyphicon glyphicon-remove actions return" onclick="window.location.href=\'http://undertheowl.pl/cms/view.php?header_code='. $header_code .'\'"></span>';
     echo '<span class="actions return text" onclick="window.location.href=\'http://undertheowl.pl/cms/view.php?header_code='. $header_code .'&search='. $GLOBALS['search'] .'\'">Wyczyść</span>';
-//    echo '<span class="actions return text" onclick="view.clear.value=1;view.submit();">Wyczyść</span>';
+    echo '<span class="actions return text" onclick="view.submit()">Przelicz</span>';
 }
 echo '</div></div></div><br>';
 
@@ -57,15 +56,19 @@ echo '<nav class="div-context-menu"><nav class="context-menu-list">Edytuj</nav><
 echo '<div class="div-table">';
 
 //Filtr dla pojedyńczych kolumn
-if(isset($GLOBALS['search'])) {
+if(isset($GLOBALS['search']) && $GLOBALS['search']) {
     echo '<div class="div-header-row">';
     foreach ($headers as $header) {
         if(contains($header['attr'],'V')) {
             echo '<div class="div-cell border">';
             if (contains($header['attr'], 'F')) {
                 echo '<div id="' . $header['code'] . '">';
-                $distinctFieldNames = $process->prepareDistinctFieldNames($header['code'], $GLOBALS['search'], $GLOBALS['filters']);
+                $distinctFieldNames = $process->prepareDistinctFieldNames($header['code'], $GLOBALS['search'], '');
+                if(!contains('option,list',$header['type']))
                 echo distinct_occurance($header['code'], $distinctFieldNames);
+                else
+                MultiSelectBox($header,$GLOBALS['search'],$GLOBALS['filters']);
+//                echo selectbox($header_code, $header['code'], $distinctFieldNames, 'filters'); chyba stare
                 echo '</div>';
             }
             echo '</div>';
@@ -103,7 +106,8 @@ foreach($documents as $document)
 echo '</div>';
 echo '<input type="submit" style="visibility: hidden;" />';
 echo '</form>';
-echo $cont_out;
+//Konec strony
+echo '</div></div>';
 
 
 echo '<script>

@@ -5,3 +5,4 @@ foreach ($_COOKIE as $key => $val) $GLOBALS[$key] = $val;
 
 require('settings.php');
 require('functions_view.php');
+require('system_functions.php');

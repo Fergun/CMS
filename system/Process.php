@@ -97,10 +97,14 @@ class Process
         $fieldsTable        = $this->config['fields']['table'];
         $fieldsName         = $this->config['fields']['name'];
         $fieldsCode         = $this->config['fields']['code'];
+        $fieldsType         = $this->config['fields']['type'];
         $fieldsAttribute    = $this->config['fields']['attribute'];
         $fieldsHidden       = $this->config['fields']['hidden'];
+        $fieldsUsingTable   = $this->config['fields']['using_table'];
+        $fieldsUsingColumn  = $this->config['fields']['using_column'];
+        $fieldsUsingWhere   = $this->config['fields']['using_where'];
 
-        $sql = 'SELECT '. $fieldsCode .', '. $fieldsName .', '. $fieldsAttribute .', '. $fieldsHidden .' FROM '. $fieldsTable .' f,'. $processTable .' p WHERE f.'. $id .' = p.'. $id .' AND '. $processCode .' = "'. $process_code .'"';
+        $sql = 'SELECT * FROM '. $fieldsTable .' f,'. $processTable .' p WHERE f.'. $id .' = p.'. $id .' AND '. $processCode .' = "'. $process_code .'"';
 
         $db->query($sql);
         while($db->next_record()) {
@@ -108,8 +112,12 @@ class Process
             $headers[] =  array(
                 'name' => $db->f($fieldsName),
                 'code' => $db->f($fieldsCode),
+                'type' => $db->f($fieldsType),
                 'attr' => $db->f($fieldsAttribute),
-                'hidden' => $db->f($fieldsHidden)
+                'hidden' => $db->f($fieldsHidden),
+                'using_table' => $db->f($fieldsUsingTable),
+                'column' => $db->f($fieldsUsingColumn),
+                'where' => $db->f($fieldsUsingWhere),
             );
         }
 
@@ -125,6 +133,10 @@ class Process
 
         $prefix             = $this->config['prefixes']['table'];
 
+//        $index_code         = $this->config['indexes']['code'];
+//        $index_id           = $this->config['indexes']['id'];
+//        $index_line_number  = $this->config['indexes']['line_number'];
+
         $condition = $this->prepareConditionSql($search_string,$filters);
 
         $sql = 'SELECT * FROM '. $prefix . $process_code;
@@ -138,6 +150,9 @@ class Process
         $rows=array();
         $i=1;
         while($db->next_record()) {
+//            $rows[$i]['code'] = $db->f($index_code);
+//            $rows[$i]['id'] = $db->f($index_id);
+//            $rows[$i]['line_number'] = $db->f($index_line_number);
             foreach($headers as $header){
                 $rows[$i][$header['code']]['value'] = $db->f($header['code']);
                 $rows[$i][$header['code']]['attr'] = $header['attr'];
@@ -159,6 +174,7 @@ class Process
 
             $conditions[] = $header['code'] .' LIKE "%'. $search_string .'%"';
         }
+        $sql = '(1=1)';
         if(count($conditions))
             $sql = '('. implode(' OR ',$conditions) .')';
 
@@ -171,20 +187,30 @@ class Process
         foreach($filters as $key => $filter){
             if(empty($filter))
                 continue;
-
-            if(is_numeric($filter)){
+            if(is_array($filter)){
+                $multi_conditions = array();
+                foreach ($filter as $key2 => $multi_filter){
+                    $value = $multi_filter;
+                    if (!is_numeric($multi_filter)) {
+                        $value = '"' . $value . '"';
+                    }
+                    $multi_conditions[] = 'CONCAT(", ",' . $key . ',", ") LIKE "%, ' . $multi_filter . ',%"';
+                }
+                $conditions[] = '('. implode(' OR ',$multi_conditions) .')';
+            }
+            else {
                 $value = $filter;
+                if (!is_numeric($filter)) {
+                    $value = '"' . $value . '"';
+                }
+                $conditions[] = $key . ' = ' . $value;
             }
-            else{
-                $value = '"'. $filter .'"';
-            }
-            $conditions[] = $key .' = '. $value;
         }
+
+        $sql = '(1=1)';
         if(count($conditions))
-        $sql = '('. implode(' AND ',$conditions) .')';
-        else{
-            $sql = '(1=1)';
-        }
+            $sql = implode(' AND ',$conditions);
+
         return $sql;
     }
 

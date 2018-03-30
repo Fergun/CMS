@@ -3,7 +3,7 @@
 
 class System_Init
 {
-    const aaaa = 1; /// kiedy∂ wykorzystam narazie nie
+    const aaaa = 1; /// kiedy≈õ wykorzystam narazie nie
     private $db;
     private $config;
 
