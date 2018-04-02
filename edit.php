@@ -3,11 +3,10 @@ require('support/init.php');
 
 require('system/Config.php');
 require('system/Process.php');
+require('system/Document.php');
 $config = new Config();
 $indexes = $config->getData()['indexes'];
 $process = new Process($config->getData(),$GLOBALS['header_code']);
-//Załadowanie nagłówków
-$headers = $process->getProcessHeaders();
 
 $mode = $GLOBALS['mode'];
 $header_code = $GLOBALS['header_code'];
@@ -15,8 +14,12 @@ $code = $GLOBALS['u_code'];
 $id = $GLOBALS['id'];
 $line_number = $GLOBALS['u_line_number'];
 
+$document = new Document(array('code'=>$code,'id'=>$id,'line_number'=>$line_number),$process->getProcessHeaders(),$process->getProcessLinesHeaders());
+$headers = $document->getHeaders();
+
 if(!contains($mode,'create')) {
-    $row = get_doc_data($header_code, $headers, $code, $id, $line_number);
+//    $row = get_doc_data($header_code, $headers, $code, $id, $line_number);
+    $row = $document->getHeadersData();
 }
 
 if(contains($mode,'to_')){
@@ -32,7 +35,7 @@ if(contains($mode,'to_')){
             $change_destination = 'view.php?header_code='.$header_code;
             break;
         case 'edit':
-            $change_destination = 'edit.php?mode=show&id='.$id.'&header_code='.$header_code;
+            $change_destination = 'edit.php?header_code='.$header_code.'&mode=show&u_code='.$code.'&id='.$id.'&u_line_number='.$line_number;
             break;
     }
     header('Location: http://undertheowl.pl/cms/'. $change_destination);
@@ -46,8 +49,8 @@ echo '<body name="'.$GLOBALS['header_code'].'">';
 $cont_in = '<div class="content"><div class="container">';
 $cont_out = '</div></div>';
 
-//Początek dokumentu
-echo $cont_in;
+//Początek strony
+echo '<div class="content"><div class="container">';
 echo '<br>';
 
 echo '<form action="edit.php" name="edit" id="edit" method="post">';
@@ -55,18 +58,22 @@ echo '<form action="edit.php" name="edit" id="edit" method="post">';
     send_hidden('mode',$mode);
     send_hidden('old_mode',$old_mode);
     send_hidden('header_code',$header_code);
+    send_hidden('u_code',$code);
+    send_hidden('u_line_number',$line_number);
     send_hidden('id',$id);
     send_hidden('u_id',$id);
 
+//Akcje do dokumnetu w danym trybie
     echo '<div class="div-table"><div class="div-header-row"><div class="div-cell nopadding border">';
         echo '<span '.tooltip('Powrót').' class="glyphicon glyphicon-arrow-left actions return" onclick="window.location.href=\'http://undertheowl.pl/cms/view.php?header_code='.$header_code.'\'"></span>';
         echo '<span class="header text">'. $title .'</span>';
         if($mode == 'show'){
-            echo '<span '.tooltip('Usuń').' class="glyphicon glyphicon-trash actions main-actions" onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?mode=delete&header_code='.$header_code.'&u_code='.$code.'&id='.$id.'&u_line_number='.$line_number.'\'"></span>';
-            echo '<span '.tooltip('Edytuj').' class="glyphicon glyphicon-pencil actions main-actions" onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?mode=edit&header_code='.$header_code.'&u_code='.$code.'&id='.$id.'&u_line_number='.$line_number.'\'"></span>';
+            echo '<span '.tooltip('Usuń').' class="glyphicon glyphicon-trash actions main-actions" onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?header_code='.$header_code.'&mode=delete&u_code='.$code.'&id='.$id.'&u_line_number='.$line_number.'\'"></span>';
+            echo '<span '.tooltip('Edytuj').' class="glyphicon glyphicon-pencil actions main-actions" onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?header_code='.$header_code.'&mode=edit&u_code='.$code.'&id='.$id.'&u_line_number='.$line_number.'\'"></span>';
         }
     echo '</div></div></div><br>';
 
+// Tabela dokumentu
     echo '<div class="div-table">';
             foreach($headers as $key => $header){
                 $hidden = '';
@@ -92,21 +99,32 @@ echo '<form action="edit.php" name="edit" id="edit" method="post">';
                 echo '</div>';
 
                 echo '<div class="div-cell border" style="width:99%">';
-                echo '<div class="header-button" name="' . $header['code'] . '">'.if_edit($header_code,-1,$tmp_mode,$header['code'],$value).'</div>';
+                echo '<div class="header-button" name="' . $header['code'] . '">';
+                if(contains('list,option',$header['type']) && $mode != 'show'){
+                    MultiSelectBox('header',$header,'','');
+                }
+                else{
+                    echo if_edit($header_code,-1,$tmp_mode,$header['code'],$value);
+                }
+                echo '</div>';
+
                 echo '</div>';
 
                 echo '</div>';
             }
     echo '</div>';
 
-//Linie
-$lines_headings = get_fields_lines_heading($header_code);
+// Linie dokumentnu
+$lines_headings = $document->getLines();
+if ($mode != 'create') {
+    $lines_rows = $document->getLinesData();
+}
 $nr = 0;
 foreach($lines_headings as $lines_header => $line_headings) {
     if ($mode != 'create') {
 
-        $lines_rows = get_fields_lines($header_code,$lines_header, $line_headings, $id);
-        if ($lines_rows) {
+        $line_rows = $lines_rows[$lines_header];
+        if ($line_rows) {
             $sql = 'SELECT MAX(u_line_number) FROM uto_' . $lines_header . ' WHERE u_id=' . $id;
             $db->query($sql);
             if ($db->next_record())
@@ -146,7 +164,7 @@ foreach($lines_headings as $lines_header => $line_headings) {
         echo '<div class="div-row" '. ($mode == 'show' ? 'onclick="window.location.href=\'http://undertheowl.pl/cms/edit.php?header_code='.$lines_header.'&mode=show&id='.$id.'&u_line_number='.($i+1).'&u_code='.$header_code.'\'"' : 'onclick="document.getElementsByName(\'' . $lines_header . '[' . $nr . '][delete_' . $i . ']\')[0].click();"') .'>';
         foreach($line_headings as $column => $line_heading) {
             $tmp_mode = $mode;
-            $value = ($GLOBALS[$lines_header][$i][$line_heading['code'] . '_' . $i] ? $GLOBALS[$lines_header][$i][$line_heading['code'] . '_' . $i] : $lines_rows[$i][$line_heading['code']]);
+            $value = ($GLOBALS[$lines_header][$i][$line_heading['code'] . '_' . $i] ? $GLOBALS[$lines_header][$i][$line_heading['code'] . '_' . $i] : $line_rows[$i][$line_heading['code']]);
             $hidden = '';
             if($line_heading['code'] == 'u_code'){
                 $hidden = 'hidden';
@@ -163,7 +181,12 @@ foreach($lines_headings as $lines_header => $line_headings) {
                 $value = $i+1;
             }
             echo '<div class="div-cell border '.$hidden.'" >';
-            echo if_edit($lines_header, $i, $tmp_mode, $line_heading['code'] . '_' . $i, $value);
+            if($mode != 'show' && contains('list,option',$line_heading['type'])){
+                echo MultiSelectBox('lines',$line_heading,'','',$i,$lines_header);
+            }
+            else{
+                echo if_edit($lines_header, $i, $tmp_mode, $line_heading['code'] . '_' . $i, $value);
+            }
             echo '</div>';
         }
         if($mode == 'edit') {

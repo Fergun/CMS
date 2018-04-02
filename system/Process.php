@@ -5,6 +5,7 @@ class Process
     private $doc_code;
     private $config;
     private $headers;
+    private $lines_headers;
 
 
     public function __construct($config,$doc_code)
@@ -83,11 +84,13 @@ class Process
 
     }
 
-    public function getProcessHeaders()
+    public function getProcessHeaders($process_code = 0)
     {
         global $db;
 
-        $process_code       = $this->doc_code;
+        if(!$process_code){
+            $process_code       = $this->doc_code;
+        }
 
         $id                 = $this->config['indexes']['id'];
 
@@ -103,6 +106,8 @@ class Process
         $fieldsUsingTable   = $this->config['fields']['using_table'];
         $fieldsUsingColumn  = $this->config['fields']['using_column'];
         $fieldsUsingWhere   = $this->config['fields']['using_where'];
+
+        $headers = array();
 
         $sql = 'SELECT * FROM '. $fieldsTable .' f,'. $processTable .' p WHERE f.'. $id .' = p.'. $id .' AND '. $processCode .' = "'. $process_code .'"';
 
@@ -121,8 +126,25 @@ class Process
             );
         }
 
-        $this->headers = $headers;
+        if(!$process_code) {
+            $this->headers = $headers;
+        }
         return $headers;
+    }
+
+    public function  getProcessLinesHeaders(){
+        global $db;
+        $lines_tables = array();
+        $sql = 'SELECT uc_minor FROM uto_connections WHERE uc_major = "'. $this->doc_code .'";';
+        $db->query($sql);
+        while($db->next_record()) {
+            $lines_tables[] = $db->f('uc_minor');
+        }
+
+        foreach ($lines_tables as $lines_table){
+            $lines_headers[$lines_table] = $this->getProcessHeaders($lines_table);
+        }
+        return $lines_headers;
     }
 
     public function getDocuments($headers, $search_string=0, $filters=0, $order=0)
@@ -194,7 +216,7 @@ class Process
                     if (!is_numeric($multi_filter)) {
                         $value = '"' . $value . '"';
                     }
-                    $multi_conditions[] = 'CONCAT(", ",' . $key . ',", ") LIKE "%, ' . $multi_filter . ',%"';
+                    $multi_conditions[] = 'CONCAT(", ",' . $key . ',",") LIKE "%, ' . $multi_filter . ',%"';
                 }
                 $conditions[] = '('. implode(' OR ',$multi_conditions) .')';
             }

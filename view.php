@@ -64,10 +64,10 @@ if(isset($GLOBALS['search']) && $GLOBALS['search']) {
             if (contains($header['attr'], 'F')) {
                 echo '<div id="' . $header['code'] . '">';
                 $distinctFieldNames = $process->prepareDistinctFieldNames($header['code'], $GLOBALS['search'], '');
-                if(!contains('option,list',$header['type']))
-                echo distinct_occurance($header['code'], $distinctFieldNames);
-                else
-                MultiSelectBox($header,$GLOBALS['search'],$GLOBALS['filters']);
+//                if(!contains('option,list',$header['type']))
+//                echo distinct_occurance($header['code'], $distinctFieldNames);
+//                else
+                MultiSelectBox('filters',$header,$GLOBALS['search'],$GLOBALS['filters']);
 //                echo selectbox($header_code, $header['code'], $distinctFieldNames, 'filters'); chyba stare
                 echo '</div>';
             }

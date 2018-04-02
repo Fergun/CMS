@@ -24,11 +24,29 @@ function edit_table($id,$table,$post)
     foreach ($post['fields'] as $key => $field) {
         $is = uto_query('SELECT count(*) FROM uto_fields WHERE u_id = '. $id .' AND uf_code = "'. $field['uf_code_'. $key] .'"');
         if(!$is) {
-            $sql = 'ALTER TABLE ' . $table . ' ADD ' . $field['uf_code_' . $key] . ' ' . ($field['uf_type_' . $key] == 'varchar' ? 'VARCHAR(4000);' : 'INT(9);');
+            $sql = 'ALTER TABLE ' . $table . ' ADD ' . $field['uf_code_' . $key] . ' ' . column_type($field['uf_type_' . $key]);
             uto_query($sql);
         }
     }
 }
+
+function column_type($field_type){
+    switch($field_type){
+        case 'line':
+        case 'list':
+        case 'option':
+            $db_type = 'VARCHAR(MAX)';
+            break;
+        case 'int':
+        case 'numeric':
+            $db_type = 'INT(9)';
+            break;
+        case 'date':
+            $db_type = 'DATETIME(6)';
+    }
+    return $db_type;
+}
+
 
 function get_fields_heading($header)
 {
@@ -206,12 +224,26 @@ function edit($header_code, $headers, $post)
             $id=$post[$column_name['code']];
             continue;
         }
-        $post[$header_code][$column_name['code']] = str_replace('"', '\"', $post[$header_code][$column_name['code']]);
-        $post[$header_code][$column_name['code']] = str_replace("'", "\'", $post[$header_code][$column_name['code']]);
+        if($column_name['code']=='u_code')
+        {
+            $code=$post[$column_name['code']];
+            continue;
+        }
+        if($column_name['code']=='u_line_number')
+        {
+            $line_number=$post[$column_name['code']];
+            continue;
+        }
+        $value = $post[$header_code][$column_name['code']];
+        $value = str_replace('"', '\"', $value);
+        $value = str_replace("'", "\'", $value);
+        if(is_array($value)){
+            $value = implode(', ',$value);
+        }
         if(is_numeric($post[$column_name['code']]))
-            $sql .= $column_name['code'] . '=' .  $post[$header_code][$column_name['code']] ;
+            $sql .= $column_name['code'] . '=' .  $value ;
         else
-            $sql .= $column_name['code'] . '="' .  $post[$header_code][$column_name['code']] . '"' ;
+            $sql .= $column_name['code'] . '="' .  $value . '"' ;
 
         if(($key + 1) == count($headers))
             $sql .= ' ';
@@ -219,25 +251,29 @@ function edit($header_code, $headers, $post)
             $sql .= ', ';
     }
 
-    $sql .= 'WHERE u_id='. $id .';';
-    $db->query($sql);
+    $sql .= 'WHERE u_id='. $id .' AND u_code = "'.$code.'" AND u_line_number = '.$line_number.';';
+//    $db->query($sql);
     $sqls[] = $sql;
     foreach ($post['line_codes'] as $line_header) {
         $sqls[] = 'DELETE FROM uto_'. $line_header .' WHERE u_code = "'. $header_code .'" AND u_id = '. $id .';';
         $sql = 'DELETE FROM uto_'. $line_header .' WHERE u_code = "'. $header_code .'" AND u_id = '. $id .';';
-        $db->query($sql);
+//        $db->query($sql);
         foreach( $post[$line_header] as $row){
             $sql = 'INSERT INTO uto_'. $line_header;
             $names = array();
             $values = array();
             foreach($row as $cell_name => $cell_value){
-                $name = substr($cell_name, 0, strlen($cell_name)-2);
+//                $name = substr($cell_name, 0, strlen($cell_name)-2);
+                $name = preg_replace('/_\d+$/','',$cell_name);
                 if($name == 'delete' || !$name){
                     continue;
                 }
                 $names[] = $name;
                 if($name == 'u_id'){
                     $cell_value = $id;
+                }
+                if(is_array($cell_value)){
+                    $cell_value = implode(', ',$cell_value);
                 }
                 if(!is_numeric($cell_value)){
                     $cell_value = '"'. $cell_value . '"';
@@ -248,7 +284,7 @@ function edit($header_code, $headers, $post)
             if(count($names) && count($values)) {
                 $sqls[] = $sql;
             }
-            $db->query($sql);
+//            $db->query($sql);
         }
     }
 
@@ -274,10 +310,16 @@ function create($header_code, $headers, $post)
             $cell_value .= $id . ',';
             continue;
         }
-        if(is_numeric($post[$header_code][$column_name['code']]))
-            $cell_value .= $post[$header_code][$column_name['code']];
-        else
-            $cell_value .= '"' . $post[$header_code][$column_name['code']] . '"';
+        $value = $post[$header_code][$column_name['code']];
+        if(is_array($value)){
+            $value = implode(', ',$value);
+        }
+        if(is_numeric($value)) {
+            $cell_value .= $value;
+        }
+        else{
+            $cell_value .= '"' . $value . '"';
+        }
 
         $cell_name .= $column_name['code'];
 
@@ -290,9 +332,11 @@ function create($header_code, $headers, $post)
     $sql='INSERT INTO uto_' . $header_code . '('. $cell_name .') values ('. $cell_value .')';
     $db->query($sql);
     if($header_code == 'headers'){
-        $sqls[] = 'INSERT INTO uto_fields (u_code,u_id,u_line_number,uf_code,uf_name,uf_type) VALUES ("headers",'.$id.',1,"u_code","Kod procesu","varchar")';
-        $sqls[] = 'INSERT INTO uto_fields (u_code,u_id,u_line_number,uf_code,uf_name,uf_type) VALUES ("headers",'.$id.',2,"u_id","Lp","int")';
-        $sqls[] = 'INSERT INTO uto_fields (u_code,u_id,u_line_number,uf_code,uf_name,uf_type) VALUES ("headers",'.$id.',3,"u_line_number","Numer","int")';
+        $front = 'INSERT INTO uto_fields (u_code,u_id,u_line_number,uf_code,uf_name,uf_type) VALUES ("headers",' . $id;
+        $sqls[] = $front . ',1,"u_code","Kod procesu","line")';
+        $sqls[] = $front . ',2,"u_id","Lp","int")';
+        $sqls[] = $front . ',3,"u_line_number","Numer","int")';
+        $sqls[] = $front . ',4,"u_status","Status","list")';
         foreach($sqls as $sql){
             uto_query($sql);
         }
